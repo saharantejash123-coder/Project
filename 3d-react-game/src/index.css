@@ -1,0 +1,332 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body, html, #root {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: #050505;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+/* Prevent canvas from hijacking touch scroll gestures */
+canvas {
+  touch-action: none;
+  display: block;
+}
+
+/* ─── UI Overlay ──────────────────────────────────────────── */
+
+.ui-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+  z-index: 10;
+  padding: 1rem;
+}
+
+.ui-card {
+  pointer-events: auto;
+  text-align: center;
+  background: rgba(0, 0, 0, 0.75);
+  padding: 3rem 4rem;
+  border-radius: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 0 40px rgba(0, 255, 255, 0.2);
+  width: 100%;
+  max-width: 520px;
+}
+
+/* ─── Typography ──────────────────────────────────────────── */
+
+h1 {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  background: linear-gradient(90deg, #00f2fe, #4facfe);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 10px rgba(0, 242, 254, 0.5));
+  line-height: 1.1;
+}
+
+h2 {
+  font-size: 1.6rem;
+  margin-bottom: 2rem;
+  color: #ddd;
+}
+
+/* ─── Score HUD ───────────────────────────────────────────── */
+
+.score-display {
+  top: 1.5rem;
+  right: 1.5rem;
+  left: auto;
+  bottom: auto;
+  width: auto;
+  height: auto;
+  justify-content: flex-start;
+  align-items: flex-start;
+  padding: 0;
+}
+
+.score-inner {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #fff;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+  background: rgba(0, 0, 0, 0.5);
+  padding: 0.4rem 0.8rem;
+  border-radius: 0.5rem;
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+
+/* ─── Buttons ─────────────────────────────────────────────── */
+
+.btn-main {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  background: linear-gradient(90deg, #ff0844 0%, #ffb199 100%);
+  color: white;
+  border: none;
+  padding: 1.1rem 3rem;
+  font-size: 1.1rem;
+  font-weight: 800;
+  border-radius: 3rem;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 0 20px rgba(255, 8, 68, 0.4);
+  width: 100%;
+  max-width: 280px;
+  pointer-events: auto;
+}
+
+.btn-main:hover {
+  transform: scale(1.05) translateY(-2px);
+  box-shadow: 0 10px 30px rgba(255, 8, 68, 0.6);
+}
+
+.btn-main:active {
+  transform: scale(0.95);
+}
+
+/* ─── Instructions ────────────────────────────────────────── */
+
+.instructions {
+  margin-bottom: 2rem;
+}
+
+.key-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  color: #aaa;
+  font-size: 0.9rem;
+  letter-spacing: 1px;
+}
+
+.key-hint b {
+  color: #00f2fe;
+}
+
+/* Show keyboard hint on desktop, touch hint on mobile */
+.touch-hint {
+  display: none;
+}
+
+.high-score-hint {
+  margin-top: 1.5rem;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: #666;
+}
+
+/* ─── Game Over Stats ─────────────────────────────────────── */
+
+.final-stats {
+  display: flex;
+  justify-content: center;
+  gap: 3rem;
+  margin-bottom: 2.5rem;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-item .label {
+  font-size: 0.8rem;
+  color: #666;
+  letter-spacing: 2px;
+  margin-bottom: 0.5rem;
+}
+
+.stat-item .value {
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: #fff;
+}
+
+.game-over-text {
+  background: linear-gradient(90deg, #ff0844, #ffb199);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ─── Touch Controls (mobile) ─────────────────────────────── */
+
+.touch-controls {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 45%;
+  pointer-events: none;
+  z-index: 10;
+  display: none; /* hidden on desktop */
+  align-items: flex-end;
+  padding: 0 1rem 2rem;
+  gap: 1rem;
+}
+
+.touch-btn {
+  pointer-events: auto;
+  flex: 1;
+  height: 100px;
+  background: rgba(0, 242, 254, 0.06);
+  border: 2px solid rgba(0, 242, 254, 0.2);
+  border-radius: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(0, 242, 254, 0.5);
+  -webkit-user-select: none;
+  user-select: none;
+  cursor: pointer;
+  transition: background 0.1s, border-color 0.1s;
+  touch-action: none;
+}
+
+.touch-btn:active {
+  background: rgba(0, 242, 254, 0.18);
+  border-color: rgba(0, 242, 254, 0.6);
+  color: rgba(0, 242, 254, 0.9);
+}
+
+/* ─── Mobile Breakpoints ──────────────────────────────────── */
+
+@media (max-width: 768px) {
+  /* Show touch controls, hide keyboard hint */
+  .touch-controls {
+    display: flex;
+  }
+
+  .keyboard-hint {
+    display: none;
+  }
+
+  .touch-hint {
+    display: flex;
+  }
+
+  /* Typography scale down */
+  h1 {
+    font-size: 2.8rem;
+    letter-spacing: 2px;
+  }
+
+  h2 {
+    font-size: 1.2rem;
+    margin-bottom: 1.5rem;
+  }
+
+  /* Card tighter on mobile */
+  .ui-card {
+    padding: 2rem 1.5rem;
+  }
+
+  /* Score HUD smaller */
+  .score-display {
+    top: 0.75rem;
+    right: 0.75rem;
+  }
+
+  .score-inner {
+    font-size: 1.3rem;
+    padding: 0.3rem 0.6rem;
+  }
+
+  /* Stats */
+  .final-stats {
+    gap: 2rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .stat-item .value {
+    font-size: 2rem;
+  }
+
+  /* Button full-width */
+  .btn-main {
+    max-width: 100%;
+    padding: 1rem 2rem;
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 400px) {
+  h1 {
+    font-size: 2.2rem;
+  }
+
+  h2 {
+    font-size: 1rem;
+  }
+
+  .ui-card {
+    padding: 1.5rem 1.2rem;
+  }
+
+  .final-stats {
+    gap: 1.5rem;
+  }
+
+  .stat-item .value {
+    font-size: 1.8rem;
+  }
+
+  .touch-btn {
+    height: 80px;
+  }
+
+  .score-inner {
+    font-size: 1.1rem;
+  }
+}
